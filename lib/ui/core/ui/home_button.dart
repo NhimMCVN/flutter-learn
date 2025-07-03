@@ -39,7 +39,7 @@ class HomeButton extends StatelessWidget {
             child: InkWell(
               borderRadius: BorderRadius.circular(8.0),
               onTap: () {
-                context.go(Routes.home);
+                context.go(Routes.todo);
               },
               child: Center(
                 child: Icon(

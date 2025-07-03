@@ -6,12 +6,13 @@ import 'package:first_flutter_app/ui/auth/login/view_models/login_viewmodel.dart
 import 'package:first_flutter_app/ui/auth/login/widgets/login_screen.dart';
 import 'package:first_flutter_app/ui/home/view_models/home_viewmodel.dart';
 import 'package:first_flutter_app/ui/home/widgets/home_screen.dart';
+import 'package:first_flutter_app/ui/todo/todo_wrapper/widgets/todo_wrapper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 GoRouter router(AuthRepository authRepository) => GoRouter(
-  initialLocation: Routes.home,
+  initialLocation: Routes.todo,
   debugLogDiagnostics: true,
   redirect: _redirect,
   refreshListenable: authRepository,
@@ -24,25 +25,17 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         ),
       ),
     ),
-    GoRoute(
-      path: Routes.home,
-      builder: (context, state) => HomeScreen(
-        viewModel: HomeviewModel(
-          bookingRepository: context.read<BookingRepository>(),
-          userRepository: context.read<UserRepository>(),
-        ),
-      ),
-    ),
+    GoRoute(path: Routes.todo, builder: (context, state) => TodoWrapper()),
   ],
 );
 
 Future<String?> _redirect(BuildContext context, GoRouterState state) async {
   final loggedIn = await context.read<AuthRepository>().isAuthenticated;
-  final loggingIn = state.matchedLocation == Routes.home;
+  final loggingIn = state.matchedLocation == Routes.todo;
   if (!loggedIn) return Routes.login;
 
   if (loggingIn) {
-    return Routes.home;
+    return Routes.todo;
   }
   return null;
 }

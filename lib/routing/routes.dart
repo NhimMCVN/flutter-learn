@@ -10,6 +10,7 @@ abstract final class Routes {
   static const home = "/";
   static const login = "/login";
   static const searchRelative = 'search';
+  static const search = '/$searchRelative';
   static const results = '/$resultsRelative';
   static const resultsRelative = 'results';
   static const activities = '/$activitiesRelative';
@@ -17,6 +18,6 @@ abstract final class Routes {
   static const booking = '/$bookingRelative';
   static const bookingRelative = 'booking';
   static String bookingWithId(int id) => '$booking/$id';
-  
+  static const todo = '/todo';
 }
 
