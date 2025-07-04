@@ -35,6 +35,7 @@ class _TodoWrapperState extends State<TodoWrapper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       bottomNavigationBar: NavigationBarWrapper(
         onIndexChanged: _onNavBarIndexChanged,
       ),
