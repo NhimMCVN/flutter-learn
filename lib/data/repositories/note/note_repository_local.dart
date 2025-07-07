@@ -13,11 +13,23 @@ class NoteRepositoryLocal implements NoteRepository {
   NoteRepositoryLocal(this._service);
 
   @override
- Future<dynamic> fetchListNote() async {
+  Future<dynamic> fetchListNote() async {
     final result = await _service.getListNote();
-    final List<NoteModelUI> list = (result.data ?? [])
-        .map((note) => NoteModelUI.fromJson(note.toJson()))
-        .toList();
+
+    List<NoteModelUI> list = [];
+    if (result.data != null && result.data is List) {
+   list = (result.data as List)
+    .map((note) {
+      if (note is NoteModel) {
+        return NoteModelUI.fromModel(note);
+      } else if (note is Map) {
+        return NoteModelUI.fromJson(Map<String, dynamic>.from(note));
+      }
+      throw Exception('Unknown note type');
+    })
+    .toList();
+    } else {
+    }
     return list;
   }
 
@@ -66,8 +78,14 @@ class NoteRepositoryLocal implements NoteRepository {
   @override
   Future<dynamic> fetchNoteById(String id) async {
     final result = await _service.getNoteById(id);
+    dynamic note = result.data;
     if (result.statusCode == 200) {
-      return EnumStatus.Success;
+       if (note is NoteModel) {
+        return NoteModelUI.fromModel(note);
+      } else if (note is Map) {
+        return NoteModelUI.fromJson(Map<String, dynamic>.from(note));
+      }
+      throw Exception('Unknown note type');
     }
     return EnumStatus.Error;
   }

@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          const TitleCards(),
+          const Text("Login"),
           Padding(
             padding: Dimens.of(context).edgeInsetsScreenSymmetric,
             child: Column(

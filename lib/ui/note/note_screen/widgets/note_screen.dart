@@ -1,18 +1,17 @@
+import 'package:first_flutter_app/ui/note/note_screen/widgets/create_note.dart';
 import 'package:first_flutter_app/ui/settings/widgets/settings.dart';
-import 'package:first_flutter_app/ui/note/todo_screen/widgets/create_todo.dart';
-import 'package:first_flutter_app/ui/note/todo_screen/widgets/list_todo.dart';
-import 'package:first_flutter_app/ui/note/todo_wrapper/widgets/navigation_bar.dart';
+import 'package:first_flutter_app/ui/note/note_screen/widgets/list_note.dart';
+import 'package:first_flutter_app/ui/note/ui/navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-class TodoWrapper extends StatefulWidget {
-  const TodoWrapper({super.key});
+class NoteScreen extends StatefulWidget {
+  const NoteScreen({super.key});
 
   @override
-  State<TodoWrapper> createState() => _TodoWrapperState();
+  State<NoteScreen> createState() => _NoteScreenState();
 }
 
-class _TodoWrapperState extends State<TodoWrapper> {
+class _NoteScreenState extends State<NoteScreen> {
   int _currentIndex = 0;
 
   void _onNavBarIndexChanged(int index) {
@@ -27,7 +26,6 @@ class _TodoWrapperState extends State<TodoWrapper> {
       [
         IconButton(
           onPressed: () {
-            print("Press to edit");
           },
           icon: Icon(Icons.edit, color: Colors.white),
         ),
@@ -35,6 +33,7 @@ class _TodoWrapperState extends State<TodoWrapper> {
       [IconButton(onPressed: () {}, icon: Icon(Icons.search))],
       [IconButton(onPressed: () {}, icon: Icon(Icons.search))],
     ];
+
     return AppBar(
       title: Text(
         titles[_currentIndex],
@@ -54,17 +53,17 @@ class _TodoWrapperState extends State<TodoWrapper> {
         initIndex: _currentIndex,
       ),
       body: [
-        CreateTodo(
+        CreateNote(
           onCreated: () {
             setState(() {
               _currentIndex = 1;
             });
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(SnackBar(content: Text('Tạo thành công!')));
+            ).showSnackBar(SnackBar(content: Text('Create successful!')));
           },
         ),
-        ListTodo(),
+        ListNote(),
         Settings(),
       ][_currentIndex],
       appBar: _buildAppBar(),

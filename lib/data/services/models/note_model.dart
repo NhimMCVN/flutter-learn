@@ -25,6 +25,23 @@ class NoteModel {
       type: json["type"],
     );
   }
+  NoteModel copyWith({
+    String? id,
+    String? description,
+    double? amount,
+    String? date,
+    String? category,
+    int? type,
+  }) {
+    return NoteModel(
+      id: id ?? this.id,
+      description: description ?? this.description,
+      amount: amount ?? this.amount,
+      date: date ?? this.date,
+      category: category ?? this.category,
+      type: type ?? this.type,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     'id': id,

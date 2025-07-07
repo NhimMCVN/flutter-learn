@@ -2,7 +2,8 @@ import 'package:first_flutter_app/data/repositories/auth/auth_repository.dart';
 import 'package:first_flutter_app/routing/routes.dart';
 import 'package:first_flutter_app/ui/auth/login/view_models/login_viewmodel.dart';
 import 'package:first_flutter_app/ui/auth/login/widgets/login_screen.dart';
-import 'package:first_flutter_app/ui/note/todo_wrapper/widgets/todo_wrapper.dart';
+import 'package:first_flutter_app/ui/note/note_screen/widgets/note_screen.dart';
+import 'package:first_flutter_app/ui/note/note_screen/widgets/update_note.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +22,14 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         ),
       ),
     ),
-    GoRoute(path: Routes.todo, builder: (context, state) => TodoWrapper()),
+    GoRoute(path: Routes.todo, builder: (context, state) => NoteScreen()),
+    GoRoute(
+      path: '/updateNote',
+      builder: (context, state) {
+        final noteId = state.extra ?? state.pathParameters['id'] ?? state.pathParameters['id'];
+        return UpdateNote(id: noteId?.toString() ?? '');
+      },
+    ),
   ],
 );
 

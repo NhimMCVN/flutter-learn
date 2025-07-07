@@ -4,12 +4,19 @@ import 'package:first_flutter_app/data/services/note/note_service.dart';
 
 class NoteServiceLocal extends NoteService {
   final List<NoteModel> _notes = [];
+  int _autoIncrementId = 0;
+
+  String _generateId() {
+    _autoIncrementId++;
+    return _autoIncrementId.toString();
+  }
 
   @override
   Future<Result<NoteModel>> createNote(NoteModel note) {
-    _notes.add(note);
+    final noteWithId = note.copyWith(id: _generateId());
+    _notes.add(noteWithId);
     return Future.value(
-      Result(message: "Create success!", statusCode: 200, data: note),
+      Result(message: "Create success!", statusCode: 200, data: noteWithId),
     );
   }
 

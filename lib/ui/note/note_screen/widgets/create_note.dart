@@ -1,19 +1,19 @@
 import 'package:first_flutter_app/data/repositories/models/category_ui.dart';
 import 'package:first_flutter_app/data/repositories/models/note_model_ui.dart';
-import 'package:first_flutter_app/ui/note/todo_screen/view_models/note_viewmodel.dart';
+import 'package:first_flutter_app/ui/note/note_screen/view_models/note_viewmodel.dart';
 import 'package:first_flutter_app/ui/note/ui/input_form.dart';
 import 'package:first_flutter_app/ui/note/ui/category_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class CreateTodo extends StatefulWidget {
-  const CreateTodo({super.key, this.onCreated});
+class CreateNote extends StatefulWidget {
+  const CreateNote({super.key, this.onCreated});
   final VoidCallback? onCreated;
   @override
-  State<CreateTodo> createState() => _CreateTodoState();
+  State<CreateNote> createState() => _CreateNoteState();
 }
 
-class _CreateTodoState extends State<CreateTodo> {
+class _CreateNoteState extends State<CreateNote> {
   NoteModelUI? note;
   late NoteViewModel viewModel;
 
@@ -70,11 +70,9 @@ class _CreateTodoState extends State<CreateTodo> {
             builder: (context, child) {
               return FilledButton(
                 onPressed: () {
-                  print("click create ${viewModel.createNote.running}");
                   if (viewModel.createNote.running) {
                     return;
                   } else {
-                    print(note);
                     if (note != null) {
                       viewModel.createNote.execute(note!);
                     }
