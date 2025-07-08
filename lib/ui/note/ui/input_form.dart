@@ -152,6 +152,7 @@ class _InputFormState extends State<InputForm> {
                       setState(() {
                         selectedType = value;
                       });
+                      _emitChange();
                     },
                   ),
                   SizedBox(height: 16),

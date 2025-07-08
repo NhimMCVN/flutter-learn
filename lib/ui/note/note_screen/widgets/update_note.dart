@@ -70,7 +70,13 @@ class _UpdateNoteState extends State<UpdateNote> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Update")),
+      appBar: AppBar(
+      title: Text(
+        "Update",
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+      backgroundColor: Colors.deepPurple,
+    ),
       body: Column(
         children: [
           Expanded(

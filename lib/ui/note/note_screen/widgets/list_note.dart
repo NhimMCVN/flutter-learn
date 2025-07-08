@@ -35,7 +35,7 @@ class _ListNoteState extends State<ListNote> {
                               arguments: note.id?.toString(),
                             );
                           },
-                          backgroundColor: const Color(0xFF7BC043),
+                          backgroundColor: Colors.deepPurple,
                           foregroundColor: Colors.white,
                           icon: Icons.edit,
                         ),
@@ -43,7 +43,7 @@ class _ListNoteState extends State<ListNote> {
                           onPressed: (context) {
                             viewModel.deleteNote.execute(note.id.toString());
                           },
-                          backgroundColor: const Color(0xFF0392CF),
+                          backgroundColor: Colors.red,
                           foregroundColor: Colors.white,
                           icon: Icons.delete,
                         ),

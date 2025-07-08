@@ -1,10 +1,10 @@
 import 'package:first_flutter_app/routing/routes.dart';
 import 'package:first_flutter_app/ui/auth/login/view_models/login_viewmodel.dart';
-import 'package:first_flutter_app/ui/auth/login/widgets/title_cards.dart';
 import 'package:first_flutter_app/ui/core/localization/applocalization.dart';
 import 'package:first_flutter_app/ui/core/themes/dimens.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_svg/svg.dart';
 
 class LoginScreen extends StatefulWidget {
   final LoginViewModel viewModel;
@@ -66,11 +66,12 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          const Text("Login"),
+          Center(child: SvgPicture.asset("assets/logo.svg")),
           Padding(
             padding: Dimens.of(context).edgeInsetsScreenSymmetric,
             child: Column(
@@ -93,6 +94,33 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     );
                   },
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "You don't have an account?",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          textAlign: TextAlign.center,
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/register');
+                          },
+                          child: Text(
+                            "Register",
+                            style: const TextStyle(
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),

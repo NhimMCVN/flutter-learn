@@ -32,8 +32,14 @@ abstract final class AppTheme {
   );
 
   static const _inputDecorationTheme = InputDecorationTheme(
+    errorStyle: TextStyle(color: Colors.red),
+    errorBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.red),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.red),
+    ),
     hintStyle: TextStyle(
-      // grey3 works for both light and dark themes
       color: AppColors.grey3,
       fontSize: 18.0,
       fontWeight: FontWeight.w400,
