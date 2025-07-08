@@ -30,11 +30,26 @@ class _ListCategoryState extends State<ListCategory> {
     listCategoryUI = widget.type == EnumInputMoney.Spending
         ? getSpendingCategories()
         : getRevenueCategories();
-    final CategoryUI? foundCate = listCategoryUI.firstWhere(
+    final CategoryUI foundCate = listCategoryUI.firstWhere(
       (ele) => ele.name == widget.initSelectedKey,
       orElse: () => CategoryUI(name: '', icon: Icons.help_outline),
     );
     selectedCate = foundCate;
+  }
+
+  @override
+  void didUpdateWidget(covariant ListCategory oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initSelectedKey != widget.initSelectedKey) {
+      listCategoryUI = widget.type == EnumInputMoney.Spending
+          ? getSpendingCategories()
+          : getRevenueCategories();
+      final CategoryUI foundCate = listCategoryUI.firstWhere(
+        (ele) => ele.name == widget.initSelectedKey,
+        orElse: () => CategoryUI(name: '', icon: Icons.help_outline),
+      );
+      selectedCate = foundCate;
+    }
   }
 
   @override

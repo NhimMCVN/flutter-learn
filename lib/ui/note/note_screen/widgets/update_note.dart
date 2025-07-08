@@ -30,8 +30,14 @@ class _UpdateNoteState extends State<UpdateNote> {
     super.didChangeDependencies();
     viewModel = Provider.of<NoteViewModel>(context, listen: false);
     fetchNoteById();
-    // viewModel.createNote.removeListener(_onCreateNoteCompleted);
-    // viewModel.createNote.addListener(_onCreateNoteCompleted);
+    viewModel.updateNote.removeListener(_onUpdateCompleted);
+    viewModel.updateNote.addListener(_onUpdateCompleted);
+  }
+
+  void _onUpdateCompleted() {
+    if (viewModel.updateNote.completed) {
+      Navigator.of(context).pop();
+    }
   }
 
   void fetchNoteById() async {
@@ -57,6 +63,7 @@ class _UpdateNoteState extends State<UpdateNote> {
       date: date ?? DateTime.now(),
       category: category ?? CategoryUI(name: "", icon: Icons.help_center),
       type: inputType == EnumInputMoney.Spending ? 0 : 1,
+      id: note?.id,
     );
   }
 
@@ -80,7 +87,40 @@ class _UpdateNoteState extends State<UpdateNote> {
                   : EnumInputMoney.Revenue,
             ),
           ),
-          SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ListenableBuilder(
+              listenable: viewModel.updateNote,
+              builder: (context, child) {
+                return FilledButton(
+                  onPressed: () {
+                    if (viewModel.updateNote.running) {
+                      return;
+                    } else {
+                      if (note != null) {
+                        viewModel.updateNote.execute(note!);
+                      }
+                    }
+                  },
+                  style: FilledButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                  ),
+                  child: viewModel.updateNote.running
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text("update"),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );

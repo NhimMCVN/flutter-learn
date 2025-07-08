@@ -57,8 +57,6 @@ class _InputFormState extends State<InputForm> {
   late final TextEditingController _descriptionController;
   late final TextEditingController _dateController;
 
-
-
   @override
   void initState() {
     super.initState();
@@ -75,6 +73,26 @@ class _InputFormState extends State<InputForm> {
     selectedCate = widget.initCate;
   }
 
+  @override
+  void didUpdateWidget(covariant InputForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initAmount != oldWidget.initAmount) {
+      _amountController.text = (widget.initAmount ?? 0).toString();
+    }
+    if (widget.initDescription != oldWidget.initDescription) {
+      _descriptionController.text = widget.initDescription ?? "";
+    }
+    if (widget.initDate != oldWidget.initDate) {
+      _dateController.text =
+          widget.initDate ?? DateFormat("dd/MM/yyyy").format(DateTime.now());
+    }
+    if (widget.initCate?.name != oldWidget.initCate?.name) {
+      selectedCate = widget.initCate;
+    }
+    if (widget.type != oldWidget.type) {
+      selectedType = widget.type;
+    }
+  }
 
   @override
   void dispose() {
