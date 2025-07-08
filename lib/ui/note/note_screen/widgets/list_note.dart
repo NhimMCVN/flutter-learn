@@ -1,3 +1,4 @@
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:first_flutter_app/ui/note/note_screen/view_models/note_viewmodel.dart';
 import 'package:first_flutter_app/ui/note/ui/todo_item.dart';
 import 'package:flutter/material.dart';
@@ -21,14 +22,33 @@ class _ListNoteState extends State<ListNote> {
             ...notes.map(
               (note) => Column(
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        '/updateNote',
-                        arguments: note.id?.toString(),
-                      );
-                    },
+                  Slidable(
+                    key: ValueKey(note.id),
+                    endActionPane: ActionPane(
+                      motion: const ScrollMotion(),
+                      children: [
+                        SlidableAction(
+                          onPressed: (context) {
+                            Navigator.pushNamed(
+                              context,
+                              '/updateNote',
+                              arguments: note.id?.toString(),
+                            );
+                          },
+                          backgroundColor: const Color(0xFF7BC043),
+                          foregroundColor: Colors.white,
+                          icon: Icons.edit,
+                        ),
+                        SlidableAction(
+                          onPressed: (context) {
+                            viewModel.deleteNote.execute(note.id.toString());
+                          },
+                          backgroundColor: const Color(0xFF0392CF),
+                          foregroundColor: Colors.white,
+                          icon: Icons.delete,
+                        ),
+                      ],
+                    ),
                     child: TodoItem(
                       category: note.category,
                       amount: note.amount.toString(),

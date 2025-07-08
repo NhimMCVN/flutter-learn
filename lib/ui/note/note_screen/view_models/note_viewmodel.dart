@@ -13,12 +13,14 @@ class NoteViewModel extends ChangeNotifier {
 
   late final Command1<void, NoteModelUI> createNote;
   late final Command1<void, NoteModelUI> updateNote;
+  late final Command1<void, String> deleteNote;
   late final Command0 loadNotes;
 
   NoteViewModel({required NoteRepository noteRepository})
     : _noteRepository = noteRepository {
     createNote = Command1<void, NoteModelUI>(_createNote);
     updateNote = Command1<void, NoteModelUI>(_updateNote);
+    deleteNote = Command1<void, String>(_deleteNoteById);
     loadNotes = Command0(_loadNotes);
   }
 
@@ -46,6 +48,17 @@ class NoteViewModel extends ChangeNotifier {
       _note = note;
       notifyListeners();
       return Result.ok(note);
+    } catch (e) {
+      return Result.error(Exception(e.toString()));
+    }
+  }
+
+  Future<Result<void>> _deleteNoteById(String id) async {
+    try {
+      await _noteRepository.deleteNote(id);
+      await loadNotes.execute();
+      notifyListeners();
+      return const Result.ok(null);
     } catch (e) {
       return Result.error(Exception(e.toString()));
     }
