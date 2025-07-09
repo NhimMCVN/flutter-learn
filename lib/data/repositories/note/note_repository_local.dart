@@ -14,20 +14,33 @@ class NoteRepositoryLocal implements NoteRepository {
 
   @override
   Future<dynamic> fetchListNote() async {
-    final result = await _service.getListNote();
+    try {
+      final result = await _service.getListNote();
+      List<NoteModelUI> list = [];
+      if (result.data != null && result.data is List) {
+        final dataList = result.data as List;
 
-    List<NoteModelUI> list = [];
-    if (result.data != null && result.data is List) {
-      list = (result.data as List).map((note) {
-        if (note is NoteModel) {
-          return NoteModelUI.fromModel(note);
-        } else if (note is Map) {
-          return NoteModelUI.fromJson(Map<String, dynamic>.from(note));
+        for (int i = 0; i < dataList.length; i++) {
+          try {
+            final note = dataList[i];
+
+            if (note is NoteModel) {
+              list.add(NoteModelUI.fromModel(note));
+            } else if (note is Map) {
+              list.add(NoteModelUI.fromJson(Map<String, dynamic>.from(note)));
+            } else {
+              throw Exception('Unknown note type: ${note.runtimeType}');
+            }
+          } catch (e) {
+            continue;
+          }
         }
-        throw Exception('Unknown note type');
-      }).toList();
-    } else {}
-    return list;
+      }
+
+      return list;
+    } catch (e) {
+      return EnumStatus.Error;
+    }
   }
 
   @override
@@ -35,7 +48,7 @@ class NoteRepositoryLocal implements NoteRepository {
     final newNote = NoteModel(
       description: note.description,
       amount: note.amount,
-      date: note.date.toIso8601String(),
+      date: note.date.millisecondsSinceEpoch / 1000,
       category: note.category.name,
       type: note.type,
     );
@@ -61,7 +74,7 @@ class NoteRepositoryLocal implements NoteRepository {
       id: id,
       description: note.description,
       amount: note.amount,
-      date: note.date.toIso8601String(),
+      date: note.date.millisecondsSinceEpoch / 1000,
       category: note.category.name,
       type: note.type,
     );

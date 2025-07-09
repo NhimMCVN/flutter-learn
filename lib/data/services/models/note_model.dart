@@ -2,7 +2,7 @@ class NoteModel {
   final String? id;
   final String description;
   final double amount;
-  final String date;
+  final double date;
   final String category;
   final int type;
 
@@ -29,7 +29,7 @@ class NoteModel {
     String? id,
     String? description,
     double? amount,
-    String? date,
+    double? date,
     String? category,
     int? type,
   }) {

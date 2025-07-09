@@ -24,20 +24,53 @@ class NoteModelUI {
       id: json["id"],
       description: json["description"] ?? '',
       amount: (json["amount"] as num).toDouble(),
-      date: DateTime.parse(json["date"]),
+      date: _parseDate(json["date"]),
       category: cate,
       type: json["type"],
     );
   }
+
   factory NoteModelUI.fromModel(NoteModel model) {
     return NoteModelUI(
       id: model.id != null ? int.tryParse(model.id!) : null,
       amount: model.amount,
       description: model.description,
-      date: DateTime.parse(model.date),
-      category: getCategoryUI(model.category), 
+      date: _parseDate(model.date),
+      category: getCategoryUI(model.category),
       type: model.type,
     );
   }
 
+  static DateTime _parseDate(dynamic date) {
+    if (date == null) {
+      return DateTime.now();
+    }
+
+    if (date is DateTime) {
+      return date;
+    }
+
+    if (date is String) {
+      try {
+        return DateTime.parse(date);
+      } catch (e) {
+        try {
+          final timestamp = int.parse(date);
+          return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+        } catch (e) {
+          return DateTime.now();
+        }
+      }
+    }
+
+    if (date is int) {
+      return DateTime.fromMillisecondsSinceEpoch(date * 1000);
+    }
+
+    if (date is double) {
+      return DateTime.fromMillisecondsSinceEpoch((date * 1000).toInt());
+    }
+
+    return DateTime.now();
+  }
 }

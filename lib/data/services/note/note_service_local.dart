@@ -83,7 +83,7 @@ class NoteServiceLocal extends NoteService {
               id: noteJson['id']?.toString(),
               description: noteJson['description'] ?? '',
               amount: (noteJson['amount'] as num?)?.toDouble() ?? 0.0,
-              date: noteJson['date']?.toString() ?? '',
+              date: (noteJson['date'] as num?)?.toDouble() ?? 0.0,
               category: noteJson['category'] ?? '',
               type: noteJson['type'] ?? 0,
             );
