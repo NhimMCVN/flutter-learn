@@ -2,7 +2,9 @@ import 'package:first_flutter_app/ui/note/note_screen/widgets/create_note.dart';
 import 'package:first_flutter_app/ui/settings/widgets/settings.dart';
 import 'package:first_flutter_app/ui/note/note_screen/widgets/list_note.dart';
 import 'package:first_flutter_app/ui/note/ui/navigation_bar.dart';
+import 'package:first_flutter_app/data/repositories/auth/auth_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class NoteScreen extends StatefulWidget {
   const NoteScreen({super.key});
@@ -26,6 +28,7 @@ class _NoteScreenState extends State<NoteScreen> {
       [
         IconButton(
           onPressed: () {
+            Navigator.pushNamed(context, '/createNote');
           },
           icon: Icon(Icons.edit, color: Colors.white),
         ),
@@ -39,7 +42,41 @@ class _NoteScreenState extends State<NoteScreen> {
         titles[_currentIndex],
         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
-      actions: actions[_currentIndex],
+      actions: [
+        ...actions[_currentIndex],
+        IconButton(
+          onPressed: () async {
+            final shouldLogout = await showDialog<bool>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text('Đăng xuất'),
+                content: Text('Bạn có chắc muốn đăng xuất?'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: Text('Hủy'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: Text('Đăng xuất'),
+                  ),
+                ],
+              ),
+            );
+
+            if (shouldLogout == true) {
+              final authRepo = Provider.of<AuthRepository>(
+                context,
+                listen: false,
+              );
+              await authRepo.logout();
+              Navigator.pushReplacementNamed(context, '/login');
+            }
+          },
+          icon: Icon(Icons.logout, color: Colors.white),
+          tooltip: 'Đăng xuất',
+        ),
+      ],
       backgroundColor: Colors.deepPurple,
     );
   }

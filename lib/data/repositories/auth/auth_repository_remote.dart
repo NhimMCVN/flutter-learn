@@ -9,17 +9,12 @@ import 'auth_repository.dart';
 
 class AuthRepositoryRemote extends AuthRepository {
   AuthRepositoryRemote({
-    required ApiClient apiClient,
     required AuthApiClient authApiClient,
     required SharedPreferencesService sharedPreferencesService,
-  }) : _apiClient = apiClient,
-       _authApiClient = authApiClient,
-       _sharedPreferencesService = sharedPreferencesService {
-    _apiClient.authHeaderProvider = _authHeaderProvider;
-  }
+  }) : _authApiClient = authApiClient,
+       _sharedPreferencesService = sharedPreferencesService {}
 
   final AuthApiClient _authApiClient;
-  final ApiClient _apiClient;
   final SharedPreferencesService _sharedPreferencesService;
 
   bool? _isAuthenticated;
@@ -63,7 +58,9 @@ class AuthRepositoryRemote extends AuthRepository {
           _log.info('User logged int');
           _isAuthenticated = true;
           _authToken = result.value.authToken;
-          return await _sharedPreferencesService.saveToken(result.value.authToken);
+          return await _sharedPreferencesService.saveToken(
+            result.value.authToken,
+          );
         case Error<LoginResponse>():
           _log.warning('Error logging in: ${result.error}');
           return Result.error(result.error);
@@ -98,6 +95,7 @@ class AuthRepositoryRemote extends AuthRepository {
     // TODO: implement register
     throw UnimplementedError();
   }
+
   String? _authHeaderProvider() =>
       _authToken != null ? 'Bearer $_authToken' : null;
 }

@@ -11,10 +11,33 @@ class ListNote extends StatefulWidget {
 
 class _ListNoteState extends State<ListNote> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final viewModel = Provider.of<NoteViewModel>(context, listen: false);
+      viewModel.loadNotes.execute();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<NoteViewModel>(
       builder: (context, viewModel, child) {
         final notes = viewModel.notes;
+
+        if (viewModel.loadNotes.running) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (notes.isEmpty) {
+          return const Center(
+            child: Text(
+              'Chưa có ghi chú nào',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          );
+        }
+
         return ListView(
           padding: const EdgeInsets.all(8),
           children: [

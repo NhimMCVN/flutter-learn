@@ -18,18 +18,15 @@ class NoteRepositoryLocal implements NoteRepository {
 
     List<NoteModelUI> list = [];
     if (result.data != null && result.data is List) {
-   list = (result.data as List)
-    .map((note) {
-      if (note is NoteModel) {
-        return NoteModelUI.fromModel(note);
-      } else if (note is Map) {
-        return NoteModelUI.fromJson(Map<String, dynamic>.from(note));
-      }
-      throw Exception('Unknown note type');
-    })
-    .toList();
-    } else {
-    }
+      list = (result.data as List).map((note) {
+        if (note is NoteModel) {
+          return NoteModelUI.fromModel(note);
+        } else if (note is Map) {
+          return NoteModelUI.fromJson(Map<String, dynamic>.from(note));
+        }
+        throw Exception('Unknown note type');
+      }).toList();
+    } else {}
     return list;
   }
 
@@ -80,7 +77,7 @@ class NoteRepositoryLocal implements NoteRepository {
     final result = await _service.getNoteById(id);
     dynamic note = result.data;
     if (result.statusCode == 200) {
-       if (note is NoteModel) {
+      if (note is NoteModel) {
         return NoteModelUI.fromModel(note);
       } else if (note is Map) {
         return NoteModelUI.fromJson(Map<String, dynamic>.from(note));

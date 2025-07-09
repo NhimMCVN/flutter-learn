@@ -12,21 +12,40 @@ import '../data/repositories/auth/auth_repository.dart';
 
 List<SingleChildWidget> get providersLocal {
   return [
-    Provider(create: (context) => AuthApiClient()),
-    Provider(create: (context) => ApiClient(
-      host: "https://x8ki-letl-twmt.n7.xano.io/api:D6nCcBx0",
-    )),
+    Provider(
+      create: (context) {
+        final client = AuthApiClient(
+          host: "https://x8ki-letl-twmt.n7.xano.io/api:qlhlF8OV",
+        );
+        return client;
+      },
+    ),
+    Provider(
+      create: (context) {
+        final client = ApiClient(
+          host: "https://x8ki-letl-twmt.n7.xano.io/api:D6nCcBx0",
+        );
+        return client;
+      },
+    ),
     Provider(create: (context) => SharedPreferencesService()),
     ChangeNotifierProvider<AuthRepository>(
       create: (context) =>
           AuthRepositoryRemote(
                 authApiClient: context.read(),
-                apiClient: context.read(),
                 sharedPreferencesService: context.read(),
               )
               as AuthRepository,
     ),
-    Provider(create: (_) => NoteServiceLocal()),
+    Provider(
+      create: (context) {
+        return NoteServiceLocal(
+          apiClient: context.read<ApiClient>(),
+          authToken: '',
+          sharedPreferencesService: context.read<SharedPreferencesService>(),
+        );
+      },
+    ),
     Provider<NoteRepository>(
       create: (context) =>
           NoteRepositoryLocal(context.read<NoteServiceLocal>()),

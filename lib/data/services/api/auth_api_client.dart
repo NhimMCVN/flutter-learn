@@ -7,34 +7,49 @@ import 'dart:io';
 
 import 'package:first_flutter_app/data/services/api/models/login.dart';
 import 'package:first_flutter_app/utils/result.dart';
+import 'package:http/http.dart' as http;
 
 class AuthApiClient {
-  AuthApiClient({String? host, int? port, HttpClient Function()? clientFactory})
-    : _host = host ?? 'localhost',
-      _port = port ?? 8080,
-      _clientFactory = clientFactory ?? HttpClient.new;
+  AuthApiClient({String? host, http.Client? client})
+    : _client = client ?? http.Client();
 
-  final String _host;
-  final int _port;
-  final HttpClient Function() _clientFactory;
+  final http.Client _client;
 
   Future<Result<LoginResponse>> login(LoginRequest loginRequest) async {
-    final client = _clientFactory();
     try {
-      final request = await client.post(_host, _port, '/login');
-      request.write(jsonEncode(loginRequest));
-      final response = await request.close();
+      final loginUrl =
+          'https://x8ki-letl-twmt.n7.xano.io/api:qlhlF8OV/auth/login';
+
+      final requestBody = {
+        'email': loginRequest.email,
+        'password': loginRequest.password,
+      };
+
+      final response = await _client.post(
+        Uri.parse(loginUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(requestBody),
+      );
+
       if (response.statusCode == 200) {
-        final stringData = await response.transform(utf8.decoder).join();
-        return Result.ok(LoginResponse.fromJson(jsonDecode(stringData)));
+        final responseJson = jsonDecode(response.body) as Map<String, dynamic>;
+        final authToken = responseJson['authToken'] as String?;
+
+        if (authToken != null) {
+          return Result.ok(LoginResponse(authToken: authToken));
+        } else {
+          return const Result.error(HttpException("Missing auth token"));
+        }
       } else {
-        return const Result.error(HttpException("Login error"));
+        return Result.error(
+          HttpException("Login failed: ${response.statusCode}"),
+        );
       }
-    } on Exception catch (error) {
-      print(error.toString());
-      return Result.error(error);
-    } finally {
-      client.close();
+    } catch (error) {
+      return Result.error(Exception('Login failed: $error'));
     }
   }
 }

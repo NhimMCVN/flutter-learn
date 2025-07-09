@@ -1,9 +1,7 @@
-import 'package:first_flutter_app/routing/routes.dart';
 import 'package:first_flutter_app/ui/auth/login/view_models/login_viewmodel.dart';
 import 'package:first_flutter_app/ui/core/localization/applocalization.dart';
 import 'package:first_flutter_app/ui/core/themes/dimens.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/svg.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,10 +13,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _email = TextEditingController(
-    text: "email@example.com",
+    text: "minhnt@gmail.com",
   );
   final TextEditingController _password = TextEditingController(
-    text: "password",
+    text: "Minh1234.",
   );
 
   @override
@@ -43,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _onResult() {
     if (widget.viewModel.login.completed) {
       widget.viewModel.login.clearResult();
-      context.go(Routes.todo);
+      Navigator.pushNamed(context, '/note');
     }
 
     if (widget.viewModel.login.error) {
