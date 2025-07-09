@@ -1,6 +1,7 @@
 import 'package:first_flutter_app/data/repositories/auth/auth_repository.dart';
 import 'package:first_flutter_app/ui/auth/login/view_models/login_viewmodel.dart';
 import 'package:first_flutter_app/ui/auth/login/widgets/login_screen.dart';
+import 'package:first_flutter_app/ui/auth/register/view_models/register_viewmodel.dart';
 import 'package:first_flutter_app/ui/auth/register/widgets/register_screen.dart';
 import 'package:first_flutter_app/ui/note/note_screen/widgets/note_screen.dart';
 import 'package:first_flutter_app/ui/note/note_screen/widgets/update_note.dart';
@@ -65,7 +66,11 @@ class MainApp extends StatelessWidget {
             authRepository: Provider.of<AuthRepository>(context, listen: false),
           ),
         ),
-        '/register': (context) => RegisterScreen(),
+        '/register': (context) => RegisterScreen(
+          viewModel: RegisterViewModel(
+            authRepository: Provider.of<AuthRepository>(context, listen: false),
+          ),
+        ),
         '/note': (context) => AuthGuard(child: NoteScreen()),
         '/createNote': (context) => AuthGuard(child: NoteScreen()),
         '/updateNote': (context) {

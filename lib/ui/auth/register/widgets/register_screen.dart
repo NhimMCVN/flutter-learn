@@ -1,6 +1,11 @@
+import 'package:first_flutter_app/ui/auth/register/view_models/register_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:first_flutter_app/ui/core/localization/applocalization.dart';
 
 class RegisterScreen extends StatefulWidget {
+  final RegisterViewModel viewModel;
+
+  const RegisterScreen({super.key, required this.viewModel});
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
@@ -13,16 +18,74 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _rePasswordController = TextEditingController();
   bool _isSubmitting = false;
 
-  void _submit() {
+  @override
+  void initState() {
+    super.initState();
+    widget.viewModel.register.addListener(_onResult);
+  }
+
+  @override
+  void didUpdateWidget(covariant RegisterScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    oldWidget.viewModel.register.removeListener(_onResult);
+    widget.viewModel.register.addListener(_onResult);
+  }
+
+  @override
+  void dispose() {
+    widget.viewModel.register.removeListener(_onResult);
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _rePasswordController.dispose();
+    super.dispose();
+  }
+
+  void _onResult() {
+    if (widget.viewModel.register.completed) {
+      setState(() {
+        _isSubmitting = false;
+      });
+      widget.viewModel.register.clearResult();
+      Navigator.pushNamed(context, '/note');
+      return;
+    }
+
+    if (widget.viewModel.register.error) {
+      setState(() {
+        _isSubmitting = false;
+      });
+      widget.viewModel.register.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalization.of(context).errorWhileLogin),
+          action: SnackBarAction(
+            label: AppLocalization.of(context).tryAgain,
+            onPressed: () => _submitForm(),
+          ),
+        ),
+      );
+    }
+  }
+
+  void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
-      setState(() => _isSubmitting = true);
-      Future.delayed(Duration(seconds: 2), () {
-        if (!mounted) return;
-        setState(() => _isSubmitting = false);
+      if (_passwordController.text != _rePasswordController.text) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Registration successful!')));
+        ).showSnackBar(SnackBar(content: Text("Passwords do not match")));
+        return;
+      }
+
+      setState(() {
+        _isSubmitting = true;
       });
+
+      widget.viewModel.register.execute((
+        _nameController.text,
+        _emailController.text,
+        _passwordController.text,
+      ));
     }
   }
 
@@ -116,8 +179,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     SizedBox(height: 24),
                     FilledButton(
-                      onPressed: _isSubmitting ? null : _submit,
-                      child: _isSubmitting
+                      onPressed:
+                          (_isSubmitting || widget.viewModel.register.running)
+                          ? null
+                          : _submitForm,
+                      child:
+                          (_isSubmitting || widget.viewModel.register.running)
                           ? SizedBox(
                               width: 20,
                               height: 20,

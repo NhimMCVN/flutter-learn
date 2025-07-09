@@ -52,4 +52,45 @@ class AuthApiClient {
       return Result.error(Exception('Login failed: $error'));
     }
   }
+
+  Future<Result<LoginResponse>> register(
+    RegisterRequest registerRequest,
+  ) async {
+    try {
+      final registerUrl =
+          'https://x8ki-letl-twmt.n7.xano.io/api:qlhlF8OV/auth/signup';
+
+      final requestBody = {
+        'email': registerRequest.email,
+        'password': registerRequest.password,
+        'name': registerRequest.name,
+      };
+
+      final response = await _client.post(
+        Uri.parse(registerUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        final responseJson = jsonDecode(response.body) as Map<String, dynamic>;
+        final authToken = responseJson['authToken'] as String?;
+
+        if (authToken != null) {
+          return Result.ok(LoginResponse(authToken: authToken));
+        } else {
+          return const Result.error(HttpException("Missing auth token"));
+        }
+      } else {
+        return Result.error(
+          HttpException("Register failed: ${response.statusCode}"),
+        );
+      }
+    } catch (error) {
+      return Result.error(Exception('Register failed: $error'));
+    }
+  }
 }

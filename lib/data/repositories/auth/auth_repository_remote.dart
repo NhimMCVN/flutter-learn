@@ -91,9 +91,26 @@ class AuthRepositoryRemote extends AuthRepository {
     required String email,
     required String name,
     required String password,
-  }) {
-    // TODO: implement register
-    throw UnimplementedError();
+  }) async {
+    try {
+      final result = await _authApiClient.register(
+        RegisterRequest(email: email, password: password, name: name),
+      );
+      switch (result) {
+        case Ok<LoginResponse>():
+          _log.info('User logged int');
+          _isAuthenticated = true;
+          _authToken = result.value.authToken;
+          return await _sharedPreferencesService.saveToken(
+            result.value.authToken,
+          );
+        case Error<LoginResponse>():
+          _log.warning('Error logging in: ${result.error}');
+          return Result.error(result.error);
+      }
+    } finally {
+      notifyListeners();
+    }
   }
 
   String? _authHeaderProvider() =>
