@@ -19,7 +19,7 @@ class TitleForm extends StatelessWidget {
 class InputForm extends StatefulWidget {
   final String? initDescription;
   final double? initAmount;
-  final String? initDate;
+  final DateTime? initDate;
   final CategoryUI? initCate;
   final EnumInputMoney? type;
 
@@ -68,9 +68,14 @@ class _InputFormState extends State<InputForm> {
       text: widget.initDescription ?? "",
     );
     _dateController = TextEditingController(
-      text: widget.initDate ?? DateFormat("dd/MM/yyyy").format(DateTime.now()),
+      text: widget.initDate != null
+          ? DateFormat("dd/MM/yyyy").format(widget.initDate!)
+          : DateFormat("dd/MM/yyyy").format(DateTime.now()),
     );
     selectedCate = widget.initCate;
+    if (widget.initDate != null) {
+      date = widget.initDate!;
+    }
   }
 
   @override
@@ -83,8 +88,12 @@ class _InputFormState extends State<InputForm> {
       _descriptionController.text = widget.initDescription ?? "";
     }
     if (widget.initDate != oldWidget.initDate) {
-      _dateController.text =
-          widget.initDate ?? DateFormat("dd/MM/yyyy").format(DateTime.now());
+      _dateController.text = widget.initDate != null
+          ? DateFormat("dd/MM/yyyy").format(widget.initDate!)
+          : DateFormat("dd/MM/yyyy").format(DateTime.now());
+      if (widget.initDate != null) {
+        date = widget.initDate!;
+      }
     }
     if (widget.initCate?.name != oldWidget.initCate?.name) {
       selectedCate = widget.initCate;
@@ -119,7 +128,8 @@ class _InputFormState extends State<InputForm> {
   Future<void> handleChangeDate() async {
     var pickedDate = await showDatePicker(
       context: context,
-      firstDate: date,
+      initialDate: date,
+      firstDate: DateTime(2000),
       lastDate: DateTime(2050),
     );
     if (pickedDate != null) {

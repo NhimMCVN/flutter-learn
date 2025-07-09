@@ -34,7 +34,14 @@ class _UpdateNoteState extends State<UpdateNote> {
     viewModel.updateNote.addListener(_onUpdateCompleted);
   }
 
+  @override
+  void dispose() {
+    viewModel.updateNote.removeListener(_onUpdateCompleted);
+    super.dispose();
+  }
+
   void _onUpdateCompleted() {
+    if (!mounted) return;
     if (viewModel.updateNote.completed) {
       Navigator.of(context).pop();
     }
@@ -42,6 +49,8 @@ class _UpdateNoteState extends State<UpdateNote> {
 
   void fetchNoteById() async {
     final result = await viewModel.getNoteById(widget.id);
+    if (!mounted) return;
+
     if (result is Ok<NoteModelUI?>) {
       final resultNote = result.value;
       setState(() {
@@ -71,12 +80,12 @@ class _UpdateNoteState extends State<UpdateNote> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-      title: Text(
-        "Update",
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          "Update",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.deepPurple,
       ),
-      backgroundColor: Colors.deepPurple,
-    ),
       body: Column(
         children: [
           Expanded(
@@ -84,9 +93,7 @@ class _UpdateNoteState extends State<UpdateNote> {
               onChanged: handleChangeForm,
               initDescription: note?.description ?? "",
               initAmount: note?.amount ?? 0,
-              initDate:
-                  note?.date?.toIso8601String() ??
-                  DateTime.now().toIso8601String(),
+              initDate: note?.date ?? DateTime.now(),
               initCate: note?.category,
               type: note?.type == 0
                   ? EnumInputMoney.Spending

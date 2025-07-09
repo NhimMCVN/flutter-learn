@@ -56,7 +56,11 @@ class NoteModelUI {
       } catch (e) {
         try {
           final timestamp = int.parse(date);
-          return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+          if (timestamp > 9999999999) {
+            return DateTime.fromMillisecondsSinceEpoch(timestamp);
+          } else {
+            return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+          }
         } catch (e) {
           return DateTime.now();
         }
@@ -64,11 +68,19 @@ class NoteModelUI {
     }
 
     if (date is int) {
-      return DateTime.fromMillisecondsSinceEpoch(date * 1000);
+      if (date > 9999999999) {
+        return DateTime.fromMillisecondsSinceEpoch(date);
+      } else {
+        return DateTime.fromMillisecondsSinceEpoch(date * 1000);
+      }
     }
 
     if (date is double) {
-      return DateTime.fromMillisecondsSinceEpoch((date * 1000).toInt());
+      if (date > 9999999999) {
+        return DateTime.fromMillisecondsSinceEpoch(date.toInt());
+      } else {
+        return DateTime.fromMillisecondsSinceEpoch((date * 1000).toInt());
+      }
     }
 
     return DateTime.now();

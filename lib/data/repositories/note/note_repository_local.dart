@@ -48,7 +48,7 @@ class NoteRepositoryLocal implements NoteRepository {
     final newNote = NoteModel(
       description: note.description,
       amount: note.amount,
-      date: note.date.millisecondsSinceEpoch / 1000,
+      date: note.date.millisecondsSinceEpoch.toDouble(),
       category: note.category.name,
       type: note.type,
     );
@@ -74,7 +74,7 @@ class NoteRepositoryLocal implements NoteRepository {
       id: id,
       description: note.description,
       amount: note.amount,
-      date: note.date.millisecondsSinceEpoch / 1000,
+      date: note.date.millisecondsSinceEpoch.toDouble(),
       category: note.category.name,
       type: note.type,
     );

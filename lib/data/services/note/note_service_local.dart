@@ -10,9 +10,6 @@ class NoteServiceLocal extends NoteService {
   final String _authToken;
   final SharedPreferencesService _sharedPreferencesService;
 
-  final List<NoteModel> _notes = [];
-  int _autoIncrementId = 0;
-
   NoteServiceLocal({
     required ApiClient apiClient,
     required String authToken,
@@ -21,27 +18,115 @@ class NoteServiceLocal extends NoteService {
        _authToken = authToken,
        _sharedPreferencesService = sharedPreferencesService;
 
-  String _generateId() {
-    _autoIncrementId++;
-    return _autoIncrementId.toString();
-  }
-
   @override
-  Future<Result<NoteModel>> createNote(NoteModel note) {
-    final noteWithId = note.copyWith(id: _generateId());
-    _notes.add(noteWithId);
-    return Future.value(
-      Result(message: "Create success!", statusCode: 200, data: noteWithId),
-    );
-  }
+  Future<Result<NoteModel>> createNote(NoteModel note) async {
+    try {
+      String authToken = _authToken;
+      if (authToken.isEmpty) {
+        final tokenResult = await _sharedPreferencesService.fetchToken();
 
-  @override
-  Future<Result> deleteNote(String id) {
-    final index = _notes.indexWhere((element) => element.id == id);
-    if (index != -1) {
-      _notes.removeAt(index);
+        switch (tokenResult) {
+          case utils_result.Ok<String?>():
+            authToken = tokenResult.value ?? '';
+            break;
+          case utils_result.Error<String?>():
+            return Result(
+              statusCode: 401,
+              message: "No auth token available",
+              data: note,
+            );
+        }
+      }
+
+      if (authToken.isEmpty) {
+        return Result(
+          statusCode: 401,
+          message: "Please login first",
+          data: note,
+        );
+      }
+
+      // Prepare payload for API
+      final noteData = {
+        'category': note.category,
+        'amount': note.amount,
+        'description': note.description,
+        'date': note.date,
+        'type': note.type,
+      };
+
+      final apiResult = await _apiClient.createNote(noteData, authToken);
+
+      switch (apiResult) {
+        case utils_result.Ok():
+          final responseJson = apiResult.value;
+
+          final createdNote = NoteModel(
+            id: responseJson['id']?.toString(),
+            description: responseJson['description'] ?? '',
+            amount: (responseJson['amount'] as num?)?.toDouble() ?? 0.0,
+            date: (responseJson['date'] as num?)?.toDouble() ?? 0.0,
+            category: responseJson['category'] ?? '',
+            type: responseJson['type'] ?? 0,
+          );
+
+          return Result(
+            statusCode: 200,
+            message: "Create note success!",
+            data: createdNote,
+          );
+
+        case utils_result.Error():
+          return Result(
+            statusCode: 500,
+            message: "Failed to create note: ${apiResult.error}",
+            data: note,
+          );
+      }
+    } catch (error) {
+      return Result(
+        statusCode: 500,
+        message: "Error creating note: $error",
+        data: note,
+      );
     }
-    return Future.value(Result(statusCode: 200, message: "Delete success!"));
+  }
+
+  @override
+  Future<Result> deleteNote(String id) async {
+    try {
+      String authToken = _authToken;
+      if (authToken.isEmpty) {
+        final tokenResult = await _sharedPreferencesService.fetchToken();
+
+        switch (tokenResult) {
+          case utils_result.Ok<String?>():
+            authToken = tokenResult.value ?? '';
+            break;
+          case utils_result.Error<String?>():
+            return Result(statusCode: 401, message: "No auth token available");
+        }
+      }
+
+      if (authToken.isEmpty) {
+        return Result(statusCode: 401, message: "Please login first");
+      }
+
+      final apiResult = await _apiClient.deleteNote(id, authToken);
+
+      switch (apiResult) {
+        case utils_result.Ok():
+          return Result(statusCode: 200, message: "Delete note success!");
+
+        case utils_result.Error():
+          return Result(
+            statusCode: 500,
+            message: "Failed to delete note: ${apiResult.error}",
+          );
+      }
+    } catch (error) {
+      return Result(statusCode: 500, message: "Error deleting note: $error");
+    }
   }
 
   @override
@@ -112,31 +197,153 @@ class NoteServiceLocal extends NoteService {
   }
 
   @override
-  Future<Result<NoteModel?>> getNoteById(String id) {
-    final index = _notes.indexWhere((element) => element.id == id);
-    if (index != -1) {
-      return Future.value(
-        Result(
-          statusCode: 200,
-          message: "Get note success!",
-          data: _notes[index],
-        ),
+  Future<Result<NoteModel?>> getNoteById(String id) async {
+    try {
+      String authToken = _authToken;
+      if (authToken.isEmpty) {
+        final tokenResult = await _sharedPreferencesService.fetchToken();
+
+        switch (tokenResult) {
+          case utils_result.Ok<String?>():
+            authToken = tokenResult.value ?? '';
+            break;
+          case utils_result.Error<String?>():
+            return Result(
+              statusCode: 401,
+              message: "No auth token available",
+              data: null,
+            );
+        }
+      }
+
+      if (authToken.isEmpty) {
+        return Result(
+          statusCode: 401,
+          message: "Please login first",
+          data: null,
+        );
+      }
+
+      final apiResult = await _apiClient.fetchNoteById(id, authToken);
+
+      switch (apiResult) {
+        case utils_result.Ok():
+          final noteJson = apiResult.value;
+
+          final note = NoteModel(
+            id: noteJson['id']?.toString(),
+            description: noteJson['description'] ?? '',
+            amount: (noteJson['amount'] as num?)?.toDouble() ?? 0.0,
+            date: (noteJson['date'] as num?)?.toDouble() ?? 0.0,
+            category: noteJson['category'] ?? '',
+            type: noteJson['type'] ?? 0,
+          );
+
+          return Result(
+            statusCode: 200,
+            message: "Get note success!",
+            data: note,
+          );
+
+        case utils_result.Error():
+          return Result(
+            statusCode: 404,
+            message: "Note not found: ${apiResult.error}",
+            data: null,
+          );
+      }
+    } catch (error) {
+      return Result(
+        statusCode: 500,
+        message: "Error fetching note: $error",
+        data: null,
       );
     }
-    return Future.value(Result(message: "Note is not found!", statusCode: 200));
   }
 
   @override
-  Future<Result<NoteModel>> updateNote(NoteModel note) {
-    final index = _notes.indexWhere((element) => element.id == note.id);
-    if (index != -1) {
-      _notes[index] = note;
-      return Future.value(
-        Result(statusCode: 200, message: "Update success!", data: note),
+  Future<Result<NoteModel>> updateNote(NoteModel note) async {
+    try {
+      String authToken = _authToken;
+      if (authToken.isEmpty) {
+        final tokenResult = await _sharedPreferencesService.fetchToken();
+
+        switch (tokenResult) {
+          case utils_result.Ok<String?>():
+            authToken = tokenResult.value ?? '';
+            break;
+          case utils_result.Error<String?>():
+            return Result(
+              statusCode: 401,
+              message: "No auth token available",
+              data: note,
+            );
+        }
+      }
+
+      if (authToken.isEmpty) {
+        return Result(
+          statusCode: 401,
+          message: "Please login first",
+          data: note,
+        );
+      }
+
+      if (note.id == null || note.id!.isEmpty) {
+        return Result(
+          statusCode: 400,
+          message: "Note ID is required for update",
+          data: note,
+        );
+      }
+
+      // Prepare payload for API
+      final noteData = {
+        'category': note.category,
+        'amount': note.amount,
+        'description': note.description,
+        'date': note.date,
+        'type': note.type,
+      };
+
+      final apiResult = await _apiClient.updateNote(
+        note.id!,
+        noteData,
+        authToken,
+      );
+
+      switch (apiResult) {
+        case utils_result.Ok():
+          final responseJson = apiResult.value;
+
+          final updatedNote = NoteModel(
+            id: responseJson['id']?.toString(),
+            description: responseJson['description'] ?? '',
+            amount: (responseJson['amount'] as num?)?.toDouble() ?? 0.0,
+            date: (responseJson['date'] as num?)?.toDouble() ?? 0.0,
+            category: responseJson['category'] ?? '',
+            type: responseJson['type'] ?? 0,
+          );
+
+          return Result(
+            statusCode: 200,
+            message: "Update note success!",
+            data: updatedNote,
+          );
+
+        case utils_result.Error():
+          return Result(
+            statusCode: 500,
+            message: "Failed to update note: ${apiResult.error}",
+            data: note,
+          );
+      }
+    } catch (error) {
+      return Result(
+        statusCode: 500,
+        message: "Error updating note: $error",
+        data: note,
       );
     }
-    return Future.value(
-      Result(statusCode: 404, message: "Note not found!", data: note),
-    );
   }
 }
