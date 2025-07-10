@@ -1,5 +1,4 @@
 import 'package:first_flutter_app/ui/note/note_screen/widgets/create_note.dart';
-import 'package:first_flutter_app/ui/settings/widgets/settings.dart';
 import 'package:first_flutter_app/ui/note/note_screen/widgets/list_note.dart';
 import 'package:first_flutter_app/ui/note/ui/navigation_bar.dart';
 import 'package:first_flutter_app/data/repositories/auth/auth_repository.dart';
@@ -23,19 +22,8 @@ class _NoteScreenState extends State<NoteScreen> {
   }
 
   AppBar _buildAppBar() {
-    final titles = ["Money lover", "Reports", "Settings"];
-    final actions = [
-      [
-        IconButton(
-          onPressed: () {
-            Navigator.pushNamed(context, '/createNote');
-          },
-          icon: Icon(Icons.edit, color: Colors.white),
-        ),
-      ],
-      [IconButton(onPressed: () {}, icon: Icon(Icons.search))],
-      [IconButton(onPressed: () {}, icon: Icon(Icons.search))],
-    ];
+    final titles = ["Money lover", "Reports"];
+    final actions = [[], []];
 
     return AppBar(
       title: Text(
@@ -49,16 +37,16 @@ class _NoteScreenState extends State<NoteScreen> {
             final shouldLogout = await showDialog<bool>(
               context: context,
               builder: (context) => AlertDialog(
-                title: Text('Đăng xuất'),
-                content: Text('Bạn có chắc muốn đăng xuất?'),
+                title: Text('Logout'),
+                content: Text('Are you sure you want to logout?'),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context, false),
-                    child: Text('Hủy'),
+                    child: Text('Cancel'),
                   ),
                   TextButton(
                     onPressed: () => Navigator.pop(context, true),
-                    child: Text('Đăng xuất'),
+                    child: Text('Logout'),
                   ),
                 ],
               ),
@@ -74,7 +62,7 @@ class _NoteScreenState extends State<NoteScreen> {
             }
           },
           icon: Icon(Icons.logout, color: Colors.white),
-          tooltip: 'Đăng xuất',
+          tooltip: 'Logout',
         ),
       ],
       backgroundColor: Colors.deepPurple,
@@ -97,11 +85,10 @@ class _NoteScreenState extends State<NoteScreen> {
             });
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(SnackBar(content: Text('Create successful!')));
+            ).showSnackBar(SnackBar(content: Text('Created successfully!')));
           },
         ),
         ListNote(),
-        Settings(),
       ][_currentIndex],
       appBar: _buildAppBar(),
     );

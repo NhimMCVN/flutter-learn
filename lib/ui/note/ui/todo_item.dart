@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 class TodoItem extends StatelessWidget {
   final CategoryUI category;
   final String amount;
+  final Color? amountColor;
   final String description;
 
   const TodoItem({
     Key? key,
     required this.category,
     required this.amount,
+    this.amountColor,
     required this.description,
   }) : super(key: key);
 
@@ -39,7 +41,13 @@ class TodoItem extends StatelessWidget {
             ],
           ),
           Spacer(),
-          Text(amount),
+          Text(
+            amount,
+            style: TextStyle(
+              color: amountColor ?? Colors.black,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );

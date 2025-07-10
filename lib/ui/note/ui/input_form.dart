@@ -62,7 +62,9 @@ class _InputFormState extends State<InputForm> {
     super.initState();
     selectedType = widget.type;
     _amountController = TextEditingController(
-      text: (widget.initAmount ?? 0).toString(),
+      text: widget.initAmount != null && widget.initAmount! > 0
+          ? NumberFormat('#,###').format(widget.initAmount!)
+          : "",
     );
     _descriptionController = TextEditingController(
       text: widget.initDescription ?? "",
@@ -82,7 +84,10 @@ class _InputFormState extends State<InputForm> {
   void didUpdateWidget(covariant InputForm oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.initAmount != oldWidget.initAmount) {
-      _amountController.text = (widget.initAmount ?? 0).toString();
+      _amountController.text =
+          widget.initAmount != null && widget.initAmount! > 0
+          ? NumberFormat('#,###').format(widget.initAmount!)
+          : "";
     }
     if (widget.initDescription != oldWidget.initDescription) {
       _descriptionController.text = widget.initDescription ?? "";
@@ -112,11 +117,25 @@ class _InputFormState extends State<InputForm> {
   }
 
   void _emitChange() {
-    final double amt = double.tryParse(_amountController.text) ?? 0;
+    final double amt =
+        double.tryParse(_amountController.text.replaceAll(',', '')) ?? 0;
     final String desc = _descriptionController.text;
     final DateTime selectedDate = date;
     final EnumInputMoney? type = selectedType;
     widget.onChanged?.call(desc, amt, selectedDate, selectedCate, type);
+  }
+
+  void _formatAmount() {
+    final text = _amountController.text.replaceAll(',', '');
+    final number = double.tryParse(text);
+    if (number != null && text.isNotEmpty) {
+      final formatter = NumberFormat('#,###');
+      final formatted = formatter.format(number);
+      _amountController.value = TextEditingValue(
+        text: formatted,
+        selection: TextSelection.collapsed(offset: formatted.length),
+      );
+    }
   }
 
   List<Widget> divider = [
@@ -169,9 +188,13 @@ class _InputFormState extends State<InputForm> {
                   CommonInputRow(
                     title: "Amount",
                     controller: _amountController,
+                    hintText: "0",
                     suffix: Text('\$', style: TextStyle(color: Colors.black)),
                     keyboardType: TextInputType.number,
-                    onChanged: (value) => _emitChange(),
+                    onChanged: (value) {
+                      _formatAmount();
+                      _emitChange();
+                    },
                   ),
                   ...divider,
                   CommonInputRow(
@@ -198,7 +221,7 @@ class _InputFormState extends State<InputForm> {
                         SizedBox(height: 8),
                         Expanded(
                           child: ListCategory(
-                            EnumInputMoney.Spending,
+                            selectedType ?? EnumInputMoney.Spending,
                             initSelectedKey: selectedCate?.name ?? '',
                             onSelectedCate: (cate) {
                               selectedCate = cate;

@@ -1,5 +1,4 @@
 import 'package:first_flutter_app/ui/auth/login/view_models/login_viewmodel.dart';
-import 'package:first_flutter_app/ui/core/localization/applocalization.dart';
 import 'package:first_flutter_app/ui/core/themes/dimens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -41,16 +40,16 @@ class _LoginScreenState extends State<LoginScreen> {
   void _onResult() {
     if (widget.viewModel.login.completed) {
       widget.viewModel.login.clearResult();
-      Navigator.pushNamed(context, '/note');
+      Navigator.pushReplacementNamed(context, '/note');
     }
 
     if (widget.viewModel.login.error) {
       widget.viewModel.login.clearResult();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalization.of(context).errorWhileLogin),
+          content: Text("Login failed. Please try again."),
           action: SnackBarAction(
-            label: AppLocalization.of(context).tryAgain,
+            label: "Try Again",
             onPressed: () => widget.viewModel.login.execute((
               _email.value.text,
               _password.value.text,
@@ -83,13 +82,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   listenable: widget.viewModel.login,
                   builder: (context, _) {
                     return FilledButton(
-                      child: Text(AppLocalization.of(context).login),
-                      onPressed: () {
-                        widget.viewModel.login.execute((
-                          _email.value.text,
-                          _password.value.text,
-                        ));
-                      },
+                      onPressed: widget.viewModel.login.running
+                          ? null
+                          : () {
+                              widget.viewModel.login.execute((
+                                _email.value.text,
+                                _password.value.text,
+                              ));
+                            },
+                      child: widget.viewModel.login.running
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text("Login"),
                     );
                   },
                 ),

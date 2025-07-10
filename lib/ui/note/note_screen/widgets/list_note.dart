@@ -3,6 +3,7 @@ import 'package:first_flutter_app/ui/note/note_screen/view_models/note_viewmodel
 import 'package:first_flutter_app/ui/note/ui/todo_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class ListNote extends StatefulWidget {
   @override
@@ -26,62 +27,110 @@ class _ListNoteState extends State<ListNote> {
         final notes = viewModel.notes;
 
         if (viewModel.loadNotes.running) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text(
+                  'Loading notes...',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              ],
+            ),
+          );
         }
 
         if (notes.isEmpty) {
           return const Center(
             child: Text(
-              'Chưa có ghi chú nào',
+              'No notes yet',
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
           );
         }
 
-        return ListView(
-          padding: const EdgeInsets.all(8),
+        return Stack(
           children: [
-            SizedBox(height: 12),
-            ...notes.map(
-              (note) => Column(
-                children: [
-                  Slidable(
-                    key: ValueKey(note.id),
-                    endActionPane: ActionPane(
-                      motion: const ScrollMotion(),
-                      children: [
-                        SlidableAction(
-                          onPressed: (context) {
-                            Navigator.pushNamed(
-                              context,
-                              '/updateNote',
-                              arguments: note.id?.toString(),
-                            );
-                          },
-                          backgroundColor: Colors.deepPurple,
-                          foregroundColor: Colors.white,
-                          icon: Icons.edit,
+            ListView(
+              padding: const EdgeInsets.all(8),
+              children: [
+                SizedBox(height: 12),
+                ...notes.map(
+                  (note) => Column(
+                    children: [
+                      Slidable(
+                        key: ValueKey(note.id),
+                        endActionPane: ActionPane(
+                          motion: const ScrollMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: viewModel.deleteNote.running
+                                  ? null
+                                  : (context) {
+                                      Navigator.pushNamed(
+                                        context,
+                                        '/updateNote',
+                                        arguments: note.id?.toString(),
+                                      );
+                                    },
+                              backgroundColor: Colors.deepPurple,
+                              foregroundColor: Colors.white,
+                              icon: Icons.edit,
+                            ),
+                            SlidableAction(
+                              onPressed: viewModel.deleteNote.running
+                                  ? null
+                                  : (context) {
+                                      viewModel.deleteNote.execute(
+                                        note.id.toString(),
+                                      );
+                                    },
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              icon: Icons.delete,
+                            ),
+                          ],
                         ),
-                        SlidableAction(
-                          onPressed: (context) {
-                            viewModel.deleteNote.execute(note.id.toString());
-                          },
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                          icon: Icons.delete,
+                        child: TodoItem(
+                          category: note.category,
+                          amount: note.type == 0
+                              ? '-\$${NumberFormat('#,###').format(note.amount)}'
+                              : '+\$${NumberFormat('#,###').format(note.amount)}',
+                          amountColor: note.type == 0
+                              ? Colors.red
+                              : Colors.green,
+                          description: note.description,
                         ),
-                      ],
-                    ),
-                    child: TodoItem(
-                      category: note.category,
-                      amount: note.amount.toString(),
-                      description: note.description,
-                    ),
+                      ),
+                      SizedBox(height: 12),
+                    ],
                   ),
-                  SizedBox(height: 12),
-                ],
-              ),
+                ),
+              ],
             ),
+            if (viewModel.deleteNote.running)
+              Container(
+                color: Colors.black26,
+                child: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text(
+                        'Deleting note...',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
           ],
         );
       },

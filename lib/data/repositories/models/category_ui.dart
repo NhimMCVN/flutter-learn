@@ -12,7 +12,7 @@ final List<CategoryUI> listAllCategories = [
   CategoryUI(name: "Pharmar", icon: Icons.local_pharmacy, type: spending),
   CategoryUI(name: "Salary", icon: Icons.attach_money, type: revenue),
   CategoryUI(name: "Bonus", icon: Icons.card_giftcard, type: revenue),
-  CategoryUI(name: "Investment", icon: Icons.trending_up, type: revenue),
+  CategoryUI(name: "Invest", icon: Icons.trending_up, type: revenue),
   CategoryUI(name: "Gift", icon: Icons.card_giftcard, type: revenue),
   CategoryUI(name: "Interest", icon: Icons.savings, type: revenue),
   CategoryUI(name: "Other", icon: Icons.more_horiz, type: revenue),

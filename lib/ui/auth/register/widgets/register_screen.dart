@@ -1,6 +1,5 @@
 import 'package:first_flutter_app/ui/auth/register/view_models/register_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:first_flutter_app/ui/core/localization/applocalization.dart';
 
 class RegisterScreen extends StatefulWidget {
   final RegisterViewModel viewModel;
@@ -47,7 +46,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _isSubmitting = false;
       });
       widget.viewModel.register.clearResult();
-      Navigator.pushNamed(context, '/note');
+      Navigator.pushReplacementNamed(context, '/note');
       return;
     }
 
@@ -58,9 +57,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       widget.viewModel.register.clearResult();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalization.of(context).errorWhileLogin),
+          content: Text("Registration failed. Please try again."),
           action: SnackBarAction(
-            label: AppLocalization.of(context).tryAgain,
+            label: "Try Again",
             onPressed: () => _submitForm(),
           ),
         ),

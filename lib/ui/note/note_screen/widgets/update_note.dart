@@ -92,7 +92,7 @@ class _UpdateNoteState extends State<UpdateNote> {
             child: InputForm(
               onChanged: handleChangeForm,
               initDescription: note?.description ?? "",
-              initAmount: note?.amount ?? 0,
+              initAmount: note?.amount,
               initDate: note?.date ?? DateTime.now(),
               initCate: note?.category,
               type: note?.type == 0
@@ -129,7 +129,7 @@ class _UpdateNoteState extends State<UpdateNote> {
                             color: Colors.white,
                           ),
                         )
-                      : Text("update"),
+                      : Text("Update"),
                 );
               },
             ),

@@ -56,11 +56,6 @@ class _NavigationBarWrapperState extends State<NavigationBarWrapper> {
           label: 'Expense',
           selectedIcon: Icon(Icons.list_outlined),
         ),
-        NavigationDestination(
-          icon: Icon(Icons.settings),
-          label: 'Settings',
-          selectedIcon: Icon(Icons.settings_outlined),
-        ),
       ],
     );
   }
