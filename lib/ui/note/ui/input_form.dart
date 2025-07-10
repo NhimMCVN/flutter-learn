@@ -102,6 +102,9 @@ class _InputFormState extends State<InputForm> {
     }
     if (widget.initCate?.name != oldWidget.initCate?.name) {
       selectedCate = widget.initCate;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _emitChange();
+      });
     }
     if (widget.type != oldWidget.type) {
       selectedType = widget.type;
@@ -180,6 +183,7 @@ class _InputFormState extends State<InputForm> {
                     onChanged: (value) {
                       setState(() {
                         selectedType = value;
+                        selectedCate = null;
                       });
                       _emitChange();
                     },

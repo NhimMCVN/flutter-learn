@@ -31,6 +31,37 @@ class _CreateNoteState extends State<CreateNote> {
     }
   }
 
+  bool _validateNote() {
+    if (note == null) {
+      _showErrorSnackBar("Please fill in all required fields");
+      return false;
+    }
+
+    if (note!.description.trim().isEmpty) {
+      _showErrorSnackBar("Please enter a description");
+      return false;
+    }
+
+    if (note!.amount <= 0) {
+      _showErrorSnackBar("Please enter a valid amount");
+      return false;
+    }
+
+    if (note!.category.name.isEmpty) {
+      _showErrorSnackBar("Please select a category");
+      return false;
+    }
+
+    return true;
+  }
+
+  void _showErrorSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
+  }
+
   @override
   void dispose() {
     viewModel.createNote.removeListener(_onCreateNoteCompleted);
@@ -73,7 +104,7 @@ class _CreateNoteState extends State<CreateNote> {
                   if (viewModel.createNote.running) {
                     return;
                   } else {
-                    if (note != null) {
+                    if (_validateNote()) {
                       viewModel.createNote.execute(note!);
                     }
                   }

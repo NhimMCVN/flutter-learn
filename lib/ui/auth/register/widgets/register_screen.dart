@@ -91,6 +91,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -177,24 +185,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                     ),
                     SizedBox(height: 24),
-                    FilledButton(
-                      onPressed:
-                          (_isSubmitting || widget.viewModel.register.running)
-                          ? null
-                          : _submitForm,
-                      child:
-                          (_isSubmitting || widget.viewModel.register.running)
-                          ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        onPressed:
+                            (_isSubmitting || widget.viewModel.register.running)
+                            ? null
+                            : _submitForm,
+                        child:
+                            (_isSubmitting || widget.viewModel.register.running)
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
                                 ),
-                              ),
-                            )
-                          : Text("Register"),
+                              )
+                            : Text("Register"),
+                      ),
                     ),
                   ],
                 ),

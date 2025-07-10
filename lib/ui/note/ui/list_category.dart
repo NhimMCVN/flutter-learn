@@ -30,11 +30,21 @@ class _ListCategoryState extends State<ListCategory> {
     listCategoryUI = widget.type == EnumInputMoney.Spending
         ? getSpendingCategories()
         : getRevenueCategories();
-    final CategoryUI foundCate = listCategoryUI.firstWhere(
-      (ele) => ele.name == widget.initSelectedKey,
-      orElse: () => CategoryUI(name: '', icon: Icons.help_outline),
-    );
-    selectedCate = foundCate;
+
+    if (widget.initSelectedKey != null && widget.initSelectedKey!.isNotEmpty) {
+      final CategoryUI foundCate = listCategoryUI.firstWhere(
+        (ele) => ele.name == widget.initSelectedKey,
+        orElse: () => CategoryUI(name: '', icon: Icons.help_outline),
+      );
+      selectedCate = foundCate.name.isNotEmpty ? foundCate : null;
+    }
+
+    if (selectedCate == null && listCategoryUI.isNotEmpty) {
+      selectedCate = listCategoryUI.first;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.onSelectedCate?.call(selectedCate!);
+      });
+    }
   }
 
   @override
@@ -47,13 +57,20 @@ class _ListCategoryState extends State<ListCategory> {
           : getRevenueCategories();
 
       if (oldWidget.type != widget.type) {
-        selectedCate = null;
+        if (listCategoryUI.isNotEmpty) {
+          selectedCate = listCategoryUI.first;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            widget.onSelectedCate?.call(selectedCate!);
+          });
+        } else {
+          selectedCate = null;
+        }
       } else {
         final CategoryUI foundCate = listCategoryUI.firstWhere(
           (ele) => ele.name == widget.initSelectedKey,
           orElse: () => CategoryUI(name: '', icon: Icons.help_outline),
         );
-        selectedCate = foundCate;
+        selectedCate = foundCate.name.isNotEmpty ? foundCate : null;
       }
     }
   }

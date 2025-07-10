@@ -8,14 +8,17 @@ import 'package:first_flutter_app/ui/note/note_screen/widgets/update_note.dart';
 import "package:flutter/material.dart";
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import "package:logging/logging.dart";
 
-import 'main_development.dart' as development;
+import 'config/dependencies.dart';
 import 'ui/core/localization/applocalization.dart';
 import 'ui/core/themes/theme.dart';
 import 'ui/core/ui/scroll_behavior.dart';
 
 void main() {
-  development.main();
+  Logger.root.level = Level.ALL;
+
+  runApp(MultiProvider(providers: providersLocal, child: MainApp()));
 }
 
 class AuthGuard extends StatelessWidget {

@@ -9,22 +9,19 @@ import 'package:first_flutter_app/ui/note/note_screen/view_models/note_viewmodel
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import '../data/repositories/auth/auth_repository.dart';
+import 'environment.dart';
 
 List<SingleChildWidget> get providersLocal {
   return [
     Provider(
       create: (context) {
-        final client = AuthApiClient(
-          host: "https://x8ki-letl-twmt.n7.xano.io/api:qlhlF8OV",
-        );
+        final client = AuthApiClient(baseUrl: Environment.authApiBaseUrl);
         return client;
       },
     ),
     Provider(
       create: (context) {
-        final client = ApiClient(
-          host: "https://x8ki-letl-twmt.n7.xano.io/api:D6nCcBx0",
-        );
+        final client = ApiClient(baseUrl: Environment.notesApiBaseUrl);
         return client;
       },
     ),

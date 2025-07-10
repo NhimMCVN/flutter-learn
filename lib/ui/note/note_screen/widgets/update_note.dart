@@ -76,6 +76,37 @@ class _UpdateNoteState extends State<UpdateNote> {
     );
   }
 
+  bool _validateNote() {
+    if (note == null) {
+      _showErrorSnackBar("Please fill in all required fields");
+      return false;
+    }
+
+    if (note!.description.trim().isEmpty) {
+      _showErrorSnackBar("Please enter a description");
+      return false;
+    }
+
+    if (note!.amount <= 0) {
+      _showErrorSnackBar("Please enter a valid amount");
+      return false;
+    }
+
+    if (note!.category.name.isEmpty) {
+      _showErrorSnackBar("Please select a category");
+      return false;
+    }
+
+    return true;
+  }
+
+  void _showErrorSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,16 +120,21 @@ class _UpdateNoteState extends State<UpdateNote> {
       body: Column(
         children: [
           Expanded(
-            child: InputForm(
-              onChanged: handleChangeForm,
-              initDescription: note?.description ?? "",
-              initAmount: note?.amount,
-              initDate: note?.date ?? DateTime.now(),
-              initCate: note?.category,
-              type: note?.type == 0
-                  ? EnumInputMoney.Spending
-                  : EnumInputMoney.Revenue,
-            ),
+            child: note != null
+                ? InputForm(
+                    key: ValueKey(
+                      note!.id,
+                    ), // Force rebuild when note is loaded
+                    onChanged: handleChangeForm,
+                    initDescription: note?.description ?? "",
+                    initAmount: note?.amount,
+                    initDate: note?.date ?? DateTime.now(),
+                    initCate: note?.category,
+                    type: note?.type == 0
+                        ? EnumInputMoney.Spending
+                        : EnumInputMoney.Revenue,
+                  )
+                : Center(child: CircularProgressIndicator()),
           ),
           SizedBox(
             width: double.infinity,
@@ -110,7 +146,7 @@ class _UpdateNoteState extends State<UpdateNote> {
                     if (viewModel.updateNote.running) {
                       return;
                     } else {
-                      if (note != null) {
+                      if (_validateNote()) {
                         viewModel.updateNote.execute(note!);
                       }
                     }
